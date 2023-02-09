@@ -34,12 +34,19 @@ services:
     depends_on:
       master1-certs:
         condition: service_completed_successfully
+      redis1:
+        condition: service_started
     hostname: master1
     image: icinga/icinga2
     volumes:
       - ./volumes/icinga2/master1:/data
       - ./icinga2.conf:/data/etc/icinga2/icinga2.conf:ro
       - ./volumes/icinga2/ca/var/lib/icinga2/ca:/data/var/lib/icinga2/ca:ro
+
+  redis1:
+    image: redis:alpine
+    volumes:
+      - ./volumes/redis/1:/data
 
   master2-certs:
     <<: *x-icinga2-certs
@@ -52,9 +59,16 @@ services:
     depends_on:
       master2-certs:
         condition: service_completed_successfully
+      redis2:
+        condition: service_started
     hostname: master2
     image: icinga/icinga2
     volumes:
       - ./volumes/icinga2/master2:/data
       - ./icinga2.conf:/data/etc/icinga2/icinga2.conf:ro
       - ./volumes/icinga2/ca/var/lib/icinga2/ca:/data/var/lib/icinga2/ca:ro
+
+  redis2:
+    image: redis:alpine
+    volumes:
+      - ./volumes/redis/2:/data
