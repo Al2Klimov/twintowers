@@ -1,0 +1,60 @@
+---
+version: '3'
+
+x-icinga2-certs: &x-icinga2-certs
+  depends_on:
+    icinga2-ca:
+      condition: service_completed_successfully
+  image: icinga/icinga2
+  command:
+    - icinga2
+    - api
+    - setup
+
+services:
+  icinga2-ca:
+    image: icinga/icinga2
+    command:
+      - bash
+      - -exo
+      - pipefail
+      - -c
+      - test -e /var/lib/icinga2/ca/ca.crt || icinga2 pki new-ca
+    volumes:
+      - ./volumes/icinga2/ca:/data
+
+  master1-certs:
+    <<: *x-icinga2-certs
+    hostname: master1
+    volumes:
+      - ./volumes/icinga2/master1:/data
+      - ./volumes/icinga2/ca/var/lib/icinga2/ca:/data/var/lib/icinga2/ca:ro
+
+  master1:
+    depends_on:
+      master1-certs:
+        condition: service_completed_successfully
+    hostname: master1
+    image: icinga/icinga2
+    volumes:
+      - ./volumes/icinga2/master1:/data
+      - ./icinga2.conf:/data/etc/icinga2/icinga2.conf:ro
+      - ./volumes/icinga2/ca/var/lib/icinga2/ca:/data/var/lib/icinga2/ca:ro
+
+  master2-certs:
+    <<: *x-icinga2-certs
+    hostname: master2
+    volumes:
+      - ./volumes/icinga2/master2:/data
+      - ./volumes/icinga2/ca/var/lib/icinga2/ca:/data/var/lib/icinga2/ca:ro
+
+  master2:
+    depends_on:
+      master2-certs:
+        condition: service_completed_successfully
+    hostname: master2
+    image: icinga/icinga2
+    volumes:
+      - ./volumes/icinga2/master2:/data
+      - ./icinga2.conf:/data/etc/icinga2/icinga2.conf:ro
+      - ./volumes/icinga2/ca/var/lib/icinga2/ca:/data/var/lib/icinga2/ca:ro
