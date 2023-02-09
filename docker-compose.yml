@@ -19,6 +19,12 @@ x-dbicinga: &x-dbicinga
     MARIADB_PASSWORD: icingadb
     MARIADB_DATABASE: icingadb
 
+x-icingadb-env: &x-icingadb-env
+  ICINGADB_REDIS_PORT: '6379'
+  ICINGADB_DATABASE_DATABASE: icingadb
+  ICINGADB_DATABASE_USER: icingadb
+  ICINGADB_DATABASE_PASSWORD: icingadb
+
 services:
   icinga2-ca:
     image: icinga/icinga2
@@ -61,6 +67,18 @@ services:
     volumes:
       - ./volumes/dbicinga/1:/var/lib/mysql
 
+  icingadb1:
+    depends_on:
+      redis1:
+        condition: service_started
+      dbicinga1:
+        condition: service_started
+    image: icinga/icingadb
+    environment:
+      <<: *x-icingadb-env
+      ICINGADB_REDIS_HOST: redis1
+      ICINGADB_DATABASE_HOST: dbicinga1
+
   master2-certs:
     <<: *x-icinga2-certs
     hostname: master2
@@ -90,3 +108,15 @@ services:
     <<: *x-dbicinga
     volumes:
       - ./volumes/dbicinga/2:/var/lib/mysql
+
+  icingadb2:
+    depends_on:
+      redis2:
+        condition: service_started
+      dbicinga2:
+        condition: service_started
+    image: icinga/icingadb
+    environment:
+      <<: *x-icingadb-env
+      ICINGADB_REDIS_HOST: redis2
+      ICINGADB_DATABASE_HOST: dbicinga2
