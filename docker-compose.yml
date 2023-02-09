@@ -25,6 +25,14 @@ x-icingadb-env: &x-icingadb-env
   ICINGADB_DATABASE_USER: icingadb
   ICINGADB_DATABASE_PASSWORD: icingadb
 
+x-dbweb: &x-dbweb
+  image: mariadb
+  environment:
+    MARIADB_RANDOM_ROOT_PASSWORD: '1'
+    MARIADB_USER: icingaweb2
+    MARIADB_PASSWORD: icingaweb2
+    MARIADB_DATABASE: icingaweb2
+
 services:
   icinga2-ca:
     image: icinga/icinga2
@@ -79,6 +87,11 @@ services:
       ICINGADB_REDIS_HOST: redis1
       ICINGADB_DATABASE_HOST: dbicinga1
 
+  dbweb1:
+    <<: *x-dbweb
+    volumes:
+      - ./volumes/dbweb/1:/var/lib/mysql
+
   master2-certs:
     <<: *x-icinga2-certs
     hostname: master2
@@ -120,3 +133,8 @@ services:
       <<: *x-icingadb-env
       ICINGADB_REDIS_HOST: redis2
       ICINGADB_DATABASE_HOST: dbicinga2
+
+  dbweb2:
+    <<: *x-dbweb
+    volumes:
+      - ./volumes/dbweb/2:/var/lib/mysql
