@@ -11,6 +11,14 @@ x-icinga2-certs: &x-icinga2-certs
     - api
     - setup
 
+x-dbicinga: &x-dbicinga
+  image: mariadb
+  environment:
+    MARIADB_RANDOM_ROOT_PASSWORD: '1'
+    MARIADB_USER: icingadb
+    MARIADB_PASSWORD: icingadb
+    MARIADB_DATABASE: icingadb
+
 services:
   icinga2-ca:
     image: icinga/icinga2
@@ -48,6 +56,11 @@ services:
     volumes:
       - ./volumes/redis/1:/data
 
+  dbicinga1:
+    <<: *x-dbicinga
+    volumes:
+      - ./volumes/dbicinga/1:/var/lib/mysql
+
   master2-certs:
     <<: *x-icinga2-certs
     hostname: master2
@@ -72,3 +85,8 @@ services:
     image: redis:alpine
     volumes:
       - ./volumes/redis/2:/data
+
+  dbicinga2:
+    <<: *x-dbicinga
+    volumes:
+      - ./volumes/dbicinga/2:/var/lib/mysql
