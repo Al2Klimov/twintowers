@@ -121,6 +121,8 @@ services:
     depends_on:
       master1-certs:
         condition: service_completed_successfully
+      ido-schema1:
+        condition: service_completed_successfully
       redis1:
         condition: service_started
     hostname: master1
@@ -209,6 +211,8 @@ services:
   master2:
     depends_on:
       master2-certs:
+        condition: service_completed_successfully
+      ido-schema2:
         condition: service_completed_successfully
       redis2:
         condition: service_started
