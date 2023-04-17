@@ -95,6 +95,16 @@ services:
     volumes:
       - ./volumes/icinga2/ca:/data
 
+  ido-schema:
+    image: icinga/icinga2
+    entrypoint: ''
+    command:
+      - cp
+      - /usr/share/icinga2-ido-mysql/schema/mysql.sql
+      - /schema
+    volumes:
+      - ./volumes/icinga2/schema:/schema
+
   master1-certs:
     <<: *x-icinga2-certs
     hostname: master1
