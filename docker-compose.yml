@@ -11,6 +11,14 @@ x-icinga2-certs: &x-icinga2-certs
     - api
     - setup
 
+x-ido: &x-ido
+  image: mariadb
+  environment:
+    MARIADB_RANDOM_ROOT_PASSWORD: '1'
+    MARIADB_USER: ido
+    MARIADB_PASSWORD: ido
+    MARIADB_DATABASE: ido
+
 x-dbicinga: &x-dbicinga
   image: mariadb
   environment:
@@ -107,6 +115,11 @@ services:
       - ./icinga2.conf:/data/etc/icinga2/icinga2.conf:ro
       - ./volumes/icinga2/ca/var/lib/icinga2/ca:/data/var/lib/icinga2/ca:ro
 
+  ido1:
+    <<: *x-ido
+    volumes:
+      - ./volumes/ido/1:/var/lib/mysql
+
   redis1:
     image: redis:alpine
     volumes:
@@ -173,6 +186,11 @@ services:
       - ./volumes/icinga2/master2:/data
       - ./icinga2.conf:/data/etc/icinga2/icinga2.conf:ro
       - ./volumes/icinga2/ca/var/lib/icinga2/ca:/data/var/lib/icinga2/ca:ro
+
+  ido2:
+    <<: *x-ido
+    volumes:
+      - ./volumes/ido/2:/var/lib/mysql
 
   redis2:
     image: redis:alpine
