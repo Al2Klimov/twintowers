@@ -11,6 +11,11 @@ x-icinga2-certs: &x-icinga2-certs
     - api
     - setup
 
+x-ido-schema: &x-ido-schema
+  image: mariadb
+  volumes:
+    - ./volumes/icinga2/schema:/schema:ro
+
 x-ido: &x-ido
   image: mariadb
   environment:
@@ -125,6 +130,23 @@ services:
       - ./icinga2.conf:/data/etc/icinga2/icinga2.conf:ro
       - ./volumes/icinga2/ca/var/lib/icinga2/ca:/data/var/lib/icinga2/ca:ro
 
+  ido-schema1:
+    <<: *x-ido-schema
+    depends_on:
+      ido-schema:
+        condition: service_completed_successfully
+      ido1:
+        condition: service_started
+    command:
+      - bash
+      - -exo
+      - pipefail
+      - -c
+      - |
+          while ! mysql -hido1 -uido -pido ido </schema/mysql.sql
+          do sleep 3
+          done
+
   ido1:
     <<: *x-ido
     volumes:
@@ -196,6 +218,23 @@ services:
       - ./volumes/icinga2/master2:/data
       - ./icinga2.conf:/data/etc/icinga2/icinga2.conf:ro
       - ./volumes/icinga2/ca/var/lib/icinga2/ca:/data/var/lib/icinga2/ca:ro
+
+  ido-schema2:
+    <<: *x-ido-schema
+    depends_on:
+      ido-schema:
+        condition: service_completed_successfully
+      ido2:
+        condition: service_started
+    command:
+      - bash
+      - -exo
+      - pipefail
+      - -c
+      - |
+          while ! mysql -hido2 -uido -pido ido </schema/mysql.sql
+          do sleep 3
+          done
 
   ido2:
     <<: *x-ido
