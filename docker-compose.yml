@@ -12,12 +12,12 @@ x-icinga2-certs: &x-icinga2-certs
     - setup
 
 x-ido-schema: &x-ido-schema
-  image: mariadb
+  image: mariadb:10
   volumes:
     - ./volumes/icinga2/schema:/schema:ro
 
 x-ido: &x-ido
-  image: mariadb
+  image: mariadb:10
   environment:
     MARIADB_RANDOM_ROOT_PASSWORD: '1'
     MARIADB_USER: ido
@@ -25,7 +25,7 @@ x-ido: &x-ido
     MARIADB_DATABASE: ido
 
 x-dbicinga: &x-dbicinga
-  image: mariadb
+  image: mariadb:10
   environment:
     MARIADB_RANDOM_ROOT_PASSWORD: '1'
     MARIADB_USER: icingadb
@@ -39,7 +39,7 @@ x-icingadb-env: &x-icingadb-env
   ICINGADB_DATABASE_PASSWORD: icingadb
 
 x-dbweb: &x-dbweb
-  image: mariadb
+  image: mariadb:10
   environment:
     MARIADB_RANDOM_ROOT_PASSWORD: '1'
     MARIADB_USER: icingaweb2
